@@ -1,0 +1,42 @@
+.app {
+  text-align: center;
+}
+.app-header {
+  padding: 20px;
+  height: 80px;
+  color: #fff;
+  background-color: #222;
+}
+
+.app-header__title {
+  font-size: 1.5em;
+}
+
+.controllers {
+  padding-top: 30px;
+}
+
+.controllers__play-stop {
+  width: 100px;
+  height: 30px;
+  background-color: #222;
+  display: inline-block;
+  text-decoration: none;
+  color: #7ed8f7;
+  font-weight: bold;
+  line-height: 1.6em;
+  font-size: 1em;
+}
+.controllers__volume-input {
+  padding-top: 30px;
+}
+.controllers__volume-input {
+  display: inline-block;
+  padding-left: 10px;
+}
+.controllers__volume-input input {
+  width: 200px;
+}
+.controllers__volume-label {
+  display: inline-block;
+}
