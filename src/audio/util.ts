@@ -23,6 +23,8 @@ export const prove = (chance: number) => {
   return false;
 };
 
+export const wrapAt = <T>(array: Array<T>, index: number): T => array[index % array.length];
+
 export const fetchAudioFile = (url: string): Promise<ArrayBuffer> =>
   fetch(url).then(res => res.arrayBuffer());
 
@@ -30,4 +32,5 @@ export const createAudioLoader$ = (audioContext: AudioContext, url: string) =>
   Observable.fromPromise(fetchAudioFile(url))
     .switchMap(arrayBuffer => audioContext.decodeAudioData(arrayBuffer))
     .shareReplay();
+
 

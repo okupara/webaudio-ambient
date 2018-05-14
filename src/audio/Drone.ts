@@ -59,8 +59,8 @@ const createSplitterNode = (context: Context, leftDelayTime: number, rightDelayT
 };
 
 export default (context: Context, audioLader$: Observable<AudioBuffer>) => {
-  const ticker = createTimerSubject(8);
-  const splitterNode = createSplitterNode(context, 0.5, 0.001);
+  const ticker = createTimerSubject(4);
+  const splitterNode = createSplitterNode(context, 0.35, 0.001);
   Observable.combineLatest(
     audioLader$,
     ticker.observable,

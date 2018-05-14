@@ -10,7 +10,7 @@ import {
 } from './util';
 import { createTimerSubject } from './Timer';
 
-const notes = [0, -1, -5, -8];
+const notes = [0, -1, -4, -7];
 const patternFns = [calcApartSinPattern1, calcApartSinPattern2];
 
 class PlayingAdsrList {

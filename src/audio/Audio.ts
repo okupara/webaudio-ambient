@@ -31,11 +31,11 @@ export class Context {
   }
   _initReverb () {
     this.reverb = Reverb(this.audioContext);
-    this.reverb.time = 2.5 //seconds
-    this.reverb.wet.value = 0.8
-    this.reverb.dry.value = 0.4
+    this.reverb.time = 2 //seconds
+    this.reverb.wet.value = 0.7
+    this.reverb.dry.value = 0.5
     this.reverb.filterType = 'lowpass'
-    this.reverb.cutoff.value = 800 //Hz
+    this.reverb.cutoff.value = 12000 //Hz
     this.reverb.connect(this.masterGainNode);
   }
   _initCompressor () {
