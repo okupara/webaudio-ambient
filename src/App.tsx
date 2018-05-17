@@ -1,33 +1,50 @@
 import * as React from 'react';
-import { start, stop } from './audio';
 import './App.css';
 
-export default class App extends React.Component {
-  slider: HTMLInputElement;
-  play = () => {
-    start();
-  }
-  stop = () => {
-    stop();
-  }
-  handleSliderChange = () => {
-  }
+interface AppProps extends React.Props<{}> {
+  start: () => void;
+  stop: () => void;
+  changeVol: (n: number) => void;
+}
 
+interface AppState {
+  isPlaying: boolean;
+}
+
+export default class App extends React.Component <AppProps, AppState> {
+  constructor (props: AppProps) {
+    super(props);
+    this.state = {
+      isPlaying: false
+    };
+  }
+  handleClick = () => {
+    if (!this.state.isPlaying) {
+      this.props.start();
+      this.setState({ isPlaying: true });
+      return;
+    }
+    this.props.stop();
+    this.setState({ isPlaying: false });
+  }
+  handleSliderChange = (e:React.ChangeEvent<HTMLInputElement>) => {
+    // be careful!! if you give the number over 1.0, it's dangerous...
+    this.props.changeVol(parseInt(e.target.value, 10) / 127.0);
+  }
   render() {
     return (
       <div className="app">
         <header className="app-header">
-          <h1 className="app-header__title">Welcome to an example</h1>
+          <h1 className="app-header__title">Welcome to my example</h1>
         </header>
         <div className="controllers">
           <p>
-            <button onClick={()=>{}} className="controllers__play-stop">Play</button>
+            <button onClick={this.handleClick} className="controllers__play-stop">{this.state.isPlaying ? 'Stop' : 'Play'}</button>
           </p>
           <div className="controllers__volume">
             <p className="controllers__volume-label">Volume</p>
             <p className="controllers__volume-input">
               <input
-                ref={(slider) => { if (slider) this.slider = slider }}
                 onChange={this.handleSliderChange}
                 type="range"
                 min="0.0"

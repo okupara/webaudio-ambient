@@ -1,4 +1,5 @@
-import { Observable } from 'rxjs';
+import { from } from 'rxjs';
+import { switchMap, shareReplay } from 'rxjs/operators';
 
 export const calcPlaybackRate = (distance: number) => Math.pow(2, distance / 12);
 
@@ -7,7 +8,7 @@ export const calcApartSinPattern1 = (x: number) => Math.sin(Math.PI / 2 * x + Ma
 export const calcApartSinPattern2 = (x: number) =>
   Math.sin(Math.PI / 2 * x - Math.PI / 2) + 1;
 
-export const chooseElementRandomly = (array: Array<any>)  =>
+export const chooseElementRandomly = <T>(array: Array<T>): T  =>
   array[Math.floor(Math.random() * array.length)];
 
 export const calc01SinPattern = (x: number) => (Math.sin(x + (3 * Math.PI / 2)) + 1) / 2;
@@ -29,8 +30,8 @@ export const fetchAudioFile = (url: string): Promise<ArrayBuffer> =>
   fetch(url).then(res => res.arrayBuffer());
 
 export const createAudioLoader$ = (audioContext: AudioContext, url: string) =>
-  Observable.fromPromise(fetchAudioFile(url))
-    .switchMap(arrayBuffer => audioContext.decodeAudioData(arrayBuffer))
-    .shareReplay();
-
-
+  from(fetchAudioFile(url))
+    .pipe(
+      switchMap(ArrayBuffer => audioContext.decodeAudioData(ArrayBuffer)),
+      shareReplay()
+    );

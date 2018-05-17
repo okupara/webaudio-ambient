@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs';
+import { Observable, combineLatest, of } from 'rxjs';
 import { ContextWithAudioBuffer, playSourceNodeWithAdsr, Context } from "./Audio";
 import { Adsr, makeAdsrGain } from './Adsr';
 import {
@@ -103,10 +103,10 @@ const minLimitOfTimer = 20;
 
 export default (context: Context, audioFileLoader$: Observable<AudioBuffer>) => {
   const ticker = createTimerSubject(minLimitOfTimer);
-  Observable.combineLatest(
+  combineLatest(
     audioFileLoader$,
     ticker.observable,
-    Observable.of(new PlayingAdsrList()),
+    of(new PlayingAdsrList()),
     (audioBuffer, timerData, playingAdsrList) => ({ audioBuffer, timerData, playingAdsrList })
   )
   .subscribe(({ audioBuffer, timerData, playingAdsrList }) => {
@@ -114,7 +114,6 @@ export default (context: Context, audioFileLoader$: Observable<AudioBuffer>) => 
     if (playingAdsrList.isPlaying(currentTime))
       return;
     timerData.limit = determineNextLimit(minLimitOfTimer, 180);
-    console.log(timerData.limit);
     playingAdsrList.play({ context, audioBuffer });
   });
   return ticker.subject;

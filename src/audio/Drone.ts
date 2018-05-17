@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs';
+import { Observable, combineLatest } from 'rxjs';
 import { DataMakingDrone, createSourceNodeWithAdsr, Context } from './Audio';
 import { makeAdsrGain } from './Adsr';
 import { calc01SinPattern, calcPlaybackRate } from './util';
@@ -61,7 +61,7 @@ const createSplitterNode = (context: Context, leftDelayTime: number, rightDelayT
 export default (context: Context, audioLader$: Observable<AudioBuffer>) => {
   const ticker = createTimerSubject(4);
   const splitterNode = createSplitterNode(context, 0.35, 0.001);
-  Observable.combineLatest(
+  combineLatest(
     audioLader$,
     ticker.observable,
     (audioBuffer, timerData) => ({ audioBuffer, timerData })

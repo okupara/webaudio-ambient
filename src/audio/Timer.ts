@@ -1,6 +1,6 @@
-import { Observable } from 'rxjs';
+import { fromEvent, Subject } from 'rxjs';
+import { map, shareReplay, scan, filter, publish } from 'rxjs/operators';
 import { EventEmitter } from 'events';
-import { Subject } from 'rxjs';
 
 const worker = new Worker('./scheduler.js');
 const ev = new EventEmitter();
@@ -19,22 +19,25 @@ export interface TimerData {
 export type TimerSubject = Subject<TimerData>;
 
 const timer$ =
-  Observable.fromEvent<MessageEvent>(ev, 'tick')
-    .map((x:MessageEvent): TimerData => x.data as TimerData)
-    .shareReplay()
+  fromEvent<MessageEvent>(ev, 'tick')
+    .pipe(
+      map((x:MessageEvent): TimerData => x.data as TimerData),
+      shareReplay()
+    );
 
 export const getTimer$ = () => timer$
 
 export const createTimerSubject = (limit: number) => {
   const subject: TimerSubject = new Subject();
-  const observable = subject
-    .asObservable()
-    .scan((acc, x) => {
-      acc.update(x.elapsed);
-      return acc;
-    }, new TickEventTrigger(limit))
-    .filter(x => x.determineFire())
-    .publish();
+  const observable = publish<TickEventTrigger>()(
+    subject.asObservable().pipe(
+      scan((acc: TickEventTrigger, x: TimerData) => {
+        acc.update(x.elapsed)
+        return acc;
+      }, new TickEventTrigger(limit))
+      ,filter(x => x.determineFire())
+    )
+  )
   observable.connect();
   return { subject, observable };
 }

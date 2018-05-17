@@ -1,4 +1,5 @@
-import { Observable, Subject } from 'rxjs';
+import { Subject, from } from 'rxjs';
+import { map, combineLatest } from 'rxjs/operators';
 import { Context } from './Audio';
 
 interface AudioWorkletNode {
@@ -13,21 +14,23 @@ const addModuleOnWorklet = (audioContext: any, url: string): Promise<void> =>
   audioContext.audioWorklet.addModule(url);
 
 const loadModule$ = (audioContext: AudioContext, url: string) =>
-  Observable.fromPromise(addModuleOnWorklet(audioContext, url))
+  from(addModuleOnWorklet(audioContext, url))
 
 export default (context: Context) => {
   const subject: Subject<string> = new Subject();
 
   loadModule$(context.audioContext, 'pinknoise.js')
-    .map(() => {
-      const noise = new AudioWorkletNode(context.audioContext, 'noise');
-      const gainNode = context.audioContext.createGain();
-      gainNode.gain.value = 0;
-      noise.connect(gainNode);
-      gainNode.connect(context.compressor);
-      return gainNode;
-    })
-    .combineLatest(subject, (gainNode, trigger: string) => ({ gainNode, trigger }))
+    .pipe(
+      map(_ => {
+        const noise = new AudioWorkletNode(context.audioContext, 'noise');
+        const gainNode = context.audioContext.createGain();
+        gainNode.gain.value = 0;
+        noise.connect(gainNode);
+        gainNode.connect(context.compressor);
+        return gainNode;
+      }),
+      combineLatest(subject, (gainNode, trigger: string) => ({ gainNode, trigger }))
+    )
     .subscribe(({ gainNode, trigger }) => {
       const now = context.audioContext.currentTime;
       if (trigger === 'start') {
